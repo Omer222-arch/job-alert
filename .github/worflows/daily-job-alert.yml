@@ -1,0 +1,37 @@
+name: Daily Job Alerts
+
+on:
+  schedule:
+    # 03:30 UTC = 09:00 IST
+    - cron: '30 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 pandas python-dotenv
+      - name: Run job fetcher
+        env:
+          EMAIL_SMTP_HOST: ${{ secrets.EMAIL_SMTP_HOST }}
+          EMAIL_SMTP_PORT: ${{ secrets.EMAIL_SMTP_PORT }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          python job_fetcher.py
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: job-results
+          path: |
+            jobs.csv
+            jobs.html
