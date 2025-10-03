@@ -2,9 +2,10 @@ name: Daily Job Alerts
 
 on:
   schedule:
-    # 03:30 UTC = 09:00 IST
+    # Runs every day at 03:30 UTC = 09:00 IST
     - cron: '30 3 * * *'
   workflow_dispatch:
+
 
 jobs:
   run:
@@ -35,3 +36,4 @@ jobs:
           path: |
             jobs.csv
             jobs.html
+
